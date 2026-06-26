@@ -22,3 +22,9 @@
 /notes.db
 /qrc_resources.cpp
 
+#list of apps. this is in the binary distribution but not source
+/apps.json
+
+#icons. also only in binary distribution
+/icons/*
+!/icons/download.txt
