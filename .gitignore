@@ -1,0 +1,24 @@
+# ignore object files
+*.o
+
+
+#generated binaries
+/HyprTile
+/hypertile-screenshotd
+/sendtoggle
+
+#automatically generated makefile
+/Makefile
+
+#honestly I'm not sure what these are, but they appear to be automatically generated too
+/.qmake.stash
+/launcher.moc
+/moc_GamepadManager.cpp
+/moc_PluginManager.cpp
+/moc_SystemMonitor.cpp
+/moc_WebScreenshotter.cpp
+/moc_predefs.h
+/monitor.db
+/notes.db
+/qrc_resources.cpp
+
