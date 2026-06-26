@@ -1,0 +1,32 @@
+#################
+# Required
+#################
++ Hyprland
++ Qt 6
++ SQLite3 + Qt SQLite driver
++ pulseaudio-utils OR pipewire-pulse
+
+# for creating small binaries:
++ strip
++ upx
+
+#################
+# Optional
+#################
+# Screenshot / Screenrecording:
++ grim
++ slurp
++ wf-recorder
+
+# File Manager:
++ thunar (or any other, you can set it)
+
+# Music Player:
++ audacious (or any other, you can set it)
+
+
+# Video Player:
++ vlc (or any other, you can set it)
+
+# External URL Handler:
++ firefox (or configure a different browser)

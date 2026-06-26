@@ -1,0 +1,2095 @@
+/* ===============================
+   BASIS
+   =============================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,255,100,1) transparent;
+}
+
+html,
+body,
+#appgrid,
+.app,
+.app * {
+    user-select: none;
+    font-family: "Nunito", system-ui, sans-serif;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+}
+
+
+/* ===============================
+   APP GRID
+   =============================== */
+
+#appgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    justify-items: center;
+    align-items: start;
+    align-content: start;
+    height: 100vh;
+    padding: 40px;
+    padding-top: 60px;
+    gap: 40px;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+
+/* ===============================
+   APP TILES
+   =============================== */
+
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+    cursor: pointer;
+    color: white;
+    padding: 0px;
+
+    overflow: hidden;
+    transition: transform 0.2s ease;
+    text-align: center;
+    position: relative;
+}
+
+.app:empty {
+    display: none;
+}
+
+.app img {
+    width: 128px;
+    height: 128px;
+    display: block;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 1),
+        rgba(0, 80, 120, 0.15)
+    );
+}
+
+.f_invert {
+    filter: invert(1);
+}
+
+.white {
+    color: #fff;
+}
+
+
+/* ===============================
+   APP INTERACTION
+   =============================== */
+
+.app:hover,
+.app.selected {
+    transform: scale(1.1);
+    animation: borderPulse 1.3s ease-in-out infinite;
+    font-weight: bold;
+}
+
+@keyframes borderPulse {
+    0% {
+        box-shadow:
+            0 0 0 3px rgba(0,255,100,1),
+            0 0 10px rgba(0,255,120,0.8);
+        color: rgba(0,255,120,0.8);
+        background: linear-gradient(
+            to bottom,
+            rgba(0,255,120,0.8),
+            rgba(0, 80, 120, 0.15)
+        );
+    }
+    50% {
+        box-shadow:
+            0 0 0 3px rgba(0,190,255,1),
+            0 0 18px rgba(0,220,255,0.9);
+        color: rgba(0,220,255,0.9);
+        background: linear-gradient(
+            to bottom,
+            rgba(0,220,255,0.9),
+            rgba(0, 80, 120, 0.15)
+        );
+    }
+    100% {
+        box-shadow:
+            0 0 0 3px rgba(0,255,100,1),
+            0 0 10px rgba(0,255,120,0.8);
+        color: rgba(0,255,120,0.8);
+        background: linear-gradient(
+            to bottom,
+            rgba(0,255,120,0.8),
+            rgba(0, 80, 120, 0.15)
+        );
+    }
+}
+
+@keyframes spinOnce {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.app.spin {
+    animation: spinOnce 250ms ease-out;
+}
+
+/* ===============================
+   EDIT MODE
+   =============================== */
+
+body.edit-mode .app {
+    outline: 2px dashed rgba(0,255,0,0.4);
+    cursor: grab;
+}
+
+body.edit-mode .app:active {
+    cursor: grabbing;
+}
+
+
+/* ===============================
+   DELETE BUTTON
+   =============================== */
+
+.delete-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 80, 80, 0.9);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 50%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: 0.15s;
+    pointer-events: auto;
+}
+
+.delete-btn:hover {
+    background: rgba(255, 20, 20, 1);
+}
+
+.edit-mode .app:hover .delete-btn {
+    display: flex;
+}
+
+
+/* ===============================
+   ADD APP BUTTON
+   =============================== */
+
+#appAddBtn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.35);
+    border-radius: 12px;
+    color: white;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    backdrop-filter: blur(10px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.edit-mode #appAddBtn {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+
+/* ===============================
+   ADD APP DIALOG
+   =============================== */
+
+.add-app-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+
+    z-index: 9999;
+}
+
+.add-app-dialog.hidden {
+    display: none;
+}
+
+.aad-inner {
+    background: rgba(30,30,30,0.9);
+    padding: 20px 30px;
+    border-radius: 14px;
+    width: 350px;
+    color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+.aad-inner h2 {
+    margin-top: 0;
+}
+
+.aad-inner input {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.aad-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.aad-buttons button {
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ===============================
+   TOP CONTROLS
+   =============================== */
+
+#topcontrols {
+    position: fixed;
+    right: 20px;
+    top: 15px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    z-index: 9999;
+}
+
+#exitHypr {
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: 0.2s;
+    color: white;
+}
+
+#exitHypr:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+#volControls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+}
+
+#volControls span {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
+    font-size: 18px;
+}
+
+#volControls span:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+#volBarContainer {
+    width: 100px;
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#volBar {
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, #00ffaa, #00ccff);
+    transition: width 0.15s;
+}
+
+
+/* ===============================
+   BACKGROUND
+   =============================== */
+
+#animcanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -9999;
+    pointer-events: none;
+    background: transparent;
+}
+
+/* ===============================
+   CALENDAR
+   =============================== */
+
+#calendar {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    padding: 20px 30px;
+    border-radius: 20px;
+    color: white;
+    font-family: sans-serif;
+    z-index: 9999;
+    display: none;
+    animation: borderPulse 1.3s ease-in-out infinite;
+}
+
+#calendar.visible {
+    display: block;
+}
+
+#calendar .cal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#calendar .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 40px);
+    gap: 10px;
+    text-align: center;
+}
+
+#calendar .day-name {
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+#calendar .day {
+    padding: 6px 0;
+    border-radius: 8px;
+    transition: 0.15s;
+}
+
+#calendar .day:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+#calendar .today {
+    background: rgba(0,255,120,0.4);
+    border-radius: 8px;
+}
+
+.event-day {
+    background: rgba(0,255,180,0.25);
+    box-shadow: 0 0 8px rgba(0,255,180,0.5);
+}
+
+
+/* ===============================
+   EVENT DIALOG
+   =============================== */
+
+#eventDialog {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(12px);
+    z-index: 999999;
+}
+
+#eventDialog.visible {
+    display: flex;
+}
+
+.event-inner {
+    background: rgba(30,30,30,0.9);
+    padding: 20px;
+    border-radius: 14px;
+    color: white;
+    width: 320px;
+}
+#eventDialog .event-inner {
+    width: 380px;              /* etwas größer */
+    padding: 26px 28px;        /* mehr Luft */
+    border-radius: 18px;
+    background: rgba(30,30,30,0.92);
+    font-size: 15px;
+    box-shadow:
+        0 0 40px rgba(0,255,255,0.25),
+        inset 0 0 30px rgba(255,255,255,0.04);
+}
+
+#eventDialog h2 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
+#eventDialog label {
+    display: block;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+#eventDialog input[type="text"],
+#eventDialog input[type="time"] {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+
+    border-radius: 10px;
+    border: none;
+
+    background: rgba(255,255,255,0.08);
+    color: white;
+    font-size: 15px;
+
+    transition: background 0.15s, box-shadow 0.15s;
+}
+
+#eventDialog input:focus {
+    outline: none;
+    background: rgba(255,255,255,0.15);
+    box-shadow: 0 0 10px rgba(0,255,200,0.35);
+}
+
+#eventTimes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    margin-top: 10px;
+}
+
+
+#eventDialog label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+#eventDialog label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    opacity: 0.75;
+}
+
+#eventDialog button {
+    height: 42px;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+#eventSave {
+    background: rgba(0,255,180,0.25);
+    color: white;
+    box-shadow: 0 0 12px rgba(0,255,180,0.4);
+}
+
+#eventSave:hover {
+    background: rgba(0,255,180,0.4);
+}
+
+#eventDelete {
+    background: rgba(255,0,0,0.25);
+    color: #ffaaaa;
+}
+
+#eventDelete:hover {
+    background: rgba(255,0,0,0.45);
+    color: white;
+}
+
+#eventCancel {
+    background: rgba(255,255,255,0.12);
+    color: #ccc;
+}
+
+#eventDialog button + button {
+    margin-left: 10px;
+}
+
+#eventTitle {
+    height: 44px;
+    font-size: 17px;
+    font-weight: 500;
+
+    background: rgba(255,255,255,0.12);
+    border-radius: 12px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.08),
+        0 0 18px rgba(0,255,200,0.15);
+
+    margin-bottom: 8px;
+}
+
+/* Title field – final polish */
+#eventTitle {
+    display: block;
+    width: 100%;                /* volle Breite */
+    box-sizing: border-box;
+
+    height: 44px;
+    padding: 0 14px;
+
+    font-size: 16px;
+    font-weight: 500;
+
+    color: #f2f6f5;             /* 🔥 heller Text */
+    caret-color: #00ffd0;       /* Cursor passend */
+
+    background: rgba(255,255,255,0.10);
+    border-radius: 12px;
+    border: none;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.10),
+        0 0 14px rgba(0,255,200,0.18);
+
+    transition: background 0.15s, box-shadow 0.15s;
+}
+#eventTitle:focus {
+    outline: none;
+    background: rgba(255,255,255,0.16);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(0,255,200,0.55),
+        0 0 18px rgba(0,255,200,0.45);
+}
+
+#eventTimes input[type="time"] {
+    background: rgba(255,255,255,0.10);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+#eventDialog label input[type="checkbox"] {
+    accent-color: rgb(0,255,200);
+}
+
+#eventDialog button {
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+#eventSave {
+    box-shadow:
+        0 0 18px rgba(0,255,180,0.45),
+        inset 0 0 0 1px rgba(255,255,255,0.15);
+}
+
+#eventTitle.error {
+    box-shadow:
+        0 0 0 2px rgba(255,80,80,0.8),
+        0 0 14px rgba(255,80,80,0.6);
+}
+
+
+/* ===============================
+   CAPTURE PANEL
+   =============================== */
+
+#capturePanel {
+    position: fixed;
+    top: 80px;
+    right: 40px;
+    width: 360px;
+    padding: 20px;
+    backdrop-filter: blur(20px);
+    background: rgba(0,0,0,0.45);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    z-index: 99999;
+    opacity: 1;
+    transition: 0.25s ease;
+}
+
+#capturePanel.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#capturePanel {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+
+    padding: 25px;
+    margin: 25px auto;
+
+    backdrop-filter: blur(20px);
+    
+    box-shadow:
+        0 0 25px rgba(0, 200, 255, 0.35),
+        inset 0 0 18px rgba(255, 255, 255, 0.06);
+
+    transition: box-shadow 0.25s, transform 0.25s;
+}
+
+#capturePanel:hover {
+    box-shadow:
+        0 0 35px rgba(0, 220, 255, 0.5),
+        inset 0 0 22px rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.panel-section {
+    margin-bottom: 25px;
+}
+
+.panel-title {
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    opacity: 0.9;
+    position: relative;
+    gap: 8px;
+}
+
+.panel-title img {
+    width: 22px;
+    margin-right: 10px;
+}
+
+.panel-title .open-folder {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
+    margin-left: auto;
+}
+
+.panel-title .open-folder:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    border-radius: 12px;
+    margin: 6px 0;
+    color: white;
+    font-size: 1.0em;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.delay-block {
+    margin-top: 10px;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.delay-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.delay {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    background: rgba(255,255,255,0.07);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.delay:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.delay-buttons .delay.active {
+    background: #fff;
+    color: #000;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(255,255,255,0.8);
+    transform: scale(1.05);
+}
+
+.stop-btn {
+    background: rgba(255, 0, 0, 0.25);
+    border: 1px solid rgba(255,0,0,0.4);
+    color: #ff8080;
+    font-weight: bold;
+}
+
+.stop-btn:hover {
+    background: rgba(255, 0, 0, 0.4);
+    color: white;
+}
+
+.versteckt {
+    display: none;
+}
+
+/* ===============================
+   SYSTEM MONITOR
+   =============================== */
+
+#sysmon {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(25px);
+    background: rgba(0,0,0,0.25);
+    z-index: 999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
+
+#sysmon.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+#sysmon-frame {
+    width: 600px;
+    padding: 40px;
+    border-radius: 20px;
+    background: rgba(5,10,15,0.5);
+    border: 2px solid rgba(0,255,180,0.45);
+    box-shadow: 
+        0 0 20px rgba(0,255,180,0.3),
+        inset 0 0 25px rgba(0,140,255,0.1);
+    color: cyan;
+    font-family: "Orbitron", sans-serif;
+    text-shadow: 0 0 8px rgba(0,255,180,0.6);
+    animation: glowPulse 4s infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 20px rgba(0,255,200,0.3);
+    }
+    50% {
+        box-shadow: 0 0 35px rgba(0,180,255,0.5);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(0,255,200,0.3);
+    }
+}
+
+.title {
+    font-size: 28px;
+    margin-bottom: 30px;
+    text-align: center;
+    letter-spacing: 4px;
+}
+
+.metric {
+    margin-bottom: 25px;
+}
+
+.metric span {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(0,255,180,0.15);
+    border-radius: 8px;
+    margin: 6px 0;
+    overflow: hidden;
+}
+
+.bar div {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00ffaa, #00aaff);
+    box-shadow: 0 0 12px #00ffaa;
+    transition: width 0.2s ease-out;
+}
+
+.val {
+    font-size: 14px;
+    opacity: 0.6;
+    text-align: right;
+}
+
+/* ===============================
+   NOTES OVERLAY
+   =============================== */
+
+#notesPanel {
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(25px);
+    background: rgba(0,0,0,0.35);
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
+
+#notesPanel.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+/* ===============================
+   NOTES FRAME (ALT)
+   =============================== */
+
+#notesFrame {
+    width: 700px;
+    padding: 30px;
+    margin: 80px auto;
+    background: rgba(5,10,20,0.55);
+    border-radius: 20px;
+    border: 2px solid rgba(0,255,200,0.3);
+    box-shadow: 0 0 40px rgba(0,255,200,0.25);
+}
+
+.notes-view {
+    display: none;
+}
+
+.notes-view.visible {
+    display: block;
+}
+
+#noteTitle {
+    width: 100%;
+    font-size: 20px;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+#noteContent {
+    width: 100%;
+    height: 300px;
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+}
+
+#noteIcon {
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
+    color: white;
+    filter: grayscale(1);
+}
+
+#noteIcon:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+
+/* ===============================
+   NOTES CONTAINER (NEU)
+   =============================== */
+
+#notesPanel {
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(25px);
+    background: rgba(0,0,0,0.35);
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.25s ease;
+}
+
+#notesPanel.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+#notesContainer {
+    width: 900px;
+    height: 600px;
+    margin: 80px auto;
+    display: grid;
+    grid-template-columns: 260px auto;
+    background: rgba(5,10,20,0.55);
+    border-radius: 20px;
+    border: 2px solid rgba(0,255,200,0.3);
+    box-shadow: 0 0 40px rgba(0,255,200,0.25);
+    overflow: hidden;
+}
+
+
+/* ===============================
+   NOTES SIDEBAR
+   =============================== */
+
+#notesSidebar {
+    background: rgba(0,0,0,0.25);
+    border-right: 1px solid rgba(0,255,200,0.15);
+    padding: 15px;
+    color: white;
+}
+
+.notes-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#newNoteBtn {
+    background: rgba(0,255,180,0.2);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 8px;
+    color: cyan;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#newNoteBtn:hover {
+    background: rgba(0,255,180,0.4);
+}
+
+#notesEntries {
+    overflow-y: auto;
+    height: calc(100% - 40px);
+}
+
+.note-item {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: 0.15s;
+    background: rgba(255,255,255,0.03);
+}
+
+.note-item:hover,
+.note-item.active {
+    background: rgba(0,255,180,0.2);
+}
+
+
+/* ===============================
+   NOTE EDITOR
+   =============================== */
+
+#noteEditorArea {
+    padding: 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+#noteTitle {
+    font-size: 20px;
+    margin-bottom: 10px;
+    padding: 7px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    background: rgba(255,255,255,0.08);
+    color: cyan;
+}
+
+#noteContent {
+    flex: 1;
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    resize: none;
+    font-size: 16px;
+    outline: none;
+}
+
+#editNoteBtn {
+    display: inline-block;
+    width: auto;
+    padding: 4px 8px;
+    margin-left: 8px;
+}
+
+.note-edit-btn {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: cyan;
+    border-radius: 6px;
+    padding: 4px 7px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.note-edit-btn:hover {
+    background: rgba(255,255,255,0.20);
+}
+
+.note-editor-actions {
+    margin-top: 15px;
+    display: none;
+    gap: 15px;
+}
+
+#noteTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#saveNoteBtn {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+}
+
+#deleteNoteBtn {
+    padding: 10px;
+    background: rgba(255,0,0,0.25);
+    color: #ff8080;
+    border: 1px solid rgba(255,0,0,0.4);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#deleteNoteBtn:hover {
+    background: rgba(255,0,0,0.5);
+    color: white;
+}
+
+/* ===============================
+   DEBUG CONSOLE
+   =============================== */
+
+#debugConsole {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    color: #00ff9c;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 10px;
+    display: none;
+    z-index: 99999999;
+    border-top: 1px solid rgba(0,255,150,0.3);
+    box-shadow: 0 -4px 20px rgba(0,255,150,0.25);
+    user-select: text;
+}
+
+#debugConsole:empty {
+    display: none;
+}
+
+
+/* ===============================
+   MONITORING OVERLAY
+   =============================== */
+
+#monitor-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    gap: 40px;
+
+    padding: 40px;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(22px);
+}
+
+#monitor-grid.hidden {
+    display: none;
+}
+
+
+/* ===============================
+   MONITOR SIDEBAR
+   =============================== */
+
+#monitor-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: rgba(20,20,20,0.55);
+    border-radius: 18px;
+    padding: 22px;
+    color: white;
+    backdrop-filter: blur(25px);
+
+    display: flex;
+    flex-direction: column;
+
+    transition: width 0.25s ease, opacity 0.25s ease;
+}
+
+#monitor-sidebar.collapsed {
+    width: 0px;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+
+#monitor-sidebar-toggle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255,255,255,0.12);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+
+    cursor: pointer;
+    color: white;
+    font-size: 20px;
+
+    z-index: 10000;
+}
+
+#monitor-sidebar h2 {
+    margin: 0 0 14px 0;
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+#monitor-url-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.url-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgba(255,255,255,0.07);
+    padding: 8px 12px;
+    border-radius: 10px;
+}
+
+.url-entry button {
+    background: rgba(255,80,80,0.35);
+    border: none;
+    border-radius: 6px;
+    padding: 2px 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#monitor-add-btn {
+    margin-top: 18px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: white;
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+
+/* ===============================
+   MONITOR GRID CONTENT
+   =============================== */
+
+#monitor-grid-inner {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+    overflow-y: auto;
+}
+
+.monitor-item {
+    background: rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 14px;
+    backdrop-filter: blur(8px);
+
+    max-height: 380px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 300;
+}
+
+.monitor-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    backdrop-filter: blur(16px);
+}
+
+.monitor-item .mtitle {
+    color: rgba(255,255,255,0.98);
+    font-weight: 500;
+}
+
+.monitor-item b {
+    color: rgba(255,255,255,1.0);
+    font-weight: 600;
+}
+
+.monitor-item img {
+    width: 100%;
+    border-radius: 14px;
+    margin-bottom: 10px;
+}
+
+.monitor-item.err {
+    border: 2px solid #ff4a4a;
+}
+
+
+/* ===============================
+   MONITOR ADD DIALOG
+   =============================== */
+
+#monitor-add-dialog {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 20000;
+}
+
+#monitor-add-dialog.hidden {
+    display: none;
+}
+
+#monitor-add-dialog .mad-inner {
+    background: rgba(30,30,30,0.85);
+    padding: 20px;
+    border-radius: 14px;
+    width: 340px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    color: white;
+}
+
+.mhistory {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 28px;
+    margin-top: 6px;
+    opacity: 0.9;
+}
+
+.mhistory div {
+    width: 4px;
+    background: linear-gradient(
+        to top,
+        rgba(0,255,80,0.9),
+        rgba(0,180,60,0.9)
+    );
+    border-radius: 2px;
+}
+
+/* ===============================
+   MUSIC PANEL
+   =============================== */
+
+#musicPanel {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+
+    padding: 20px;
+    border-radius: 15px;
+
+    pointer-events: auto !important;
+}
+
+#musicPanel.hidden {
+    display: none;
+}
+
+
+/* ===============================
+   MUSIC INPUT
+   =============================== */
+
+#musicInput {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+
+    border: none;
+    border-radius: 14px;
+    outline: none;
+
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    color: #e8e8e8;
+
+    box-shadow:
+        0 0 35px rgba(0, 220, 255, 0.50),
+        inset 0 0 22px rgba(255, 255, 255, 0.10),
+        0 0 0 1px rgba(255, 255, 255, 0.10);
+
+    transition:
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+#musicInput::placeholder {
+    color: rgba(255,255,255,0.35);
+}
+
+#musicInput:focus {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 0 45px rgba(0, 220, 255, 0.60),
+        inset 0 0 28px rgba(255, 255, 255, 0.18),
+        0 0 0 1px rgba(0, 220, 255, 0.45);
+}
+
+
+/* ===============================
+   MUSIC RESULTS
+   =============================== */
+
+#musicResults {
+    margin-top: 18px;
+    border-radius: 14px;
+    padding: 8px 0;
+
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    box-shadow:
+        0 0 30px rgba(0, 220, 255, 0.45),
+        inset 0 0 18px rgba(255, 255, 255, 0.10),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+
+    max-height: 45vh;
+    overflow-y: auto;
+
+    transition: box-shadow 0.25s ease;
+}
+
+#musicResults:empty {
+    display: none;
+}
+
+#musicResults.music-list-focused {
+    box-shadow:
+        0 0 40px rgba(0, 220, 255, 0.65),
+        inset 0 0 22px rgba(255, 255, 255, 0.15),
+        0 0 0 1px rgba(0, 220, 255, 0.45);
+}
+
+
+/* ===============================
+   MUSIC LIST ITEMS
+   =============================== */
+
+.music-item {
+    padding: 12px 18px;
+    font-size: 20px;
+    color: #e8e8e8;
+    cursor: pointer;
+
+    border-radius: 10px;
+    margin: 4px 10px;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.music-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(4px);
+
+    box-shadow:
+        0 0 12px rgba(0, 220, 255, 0.35),
+        inset 0 0 12px rgba(255, 255, 255, 0.10) !important;
+}
+
+.music-item.active,
+.music-item.sel {
+    background: rgba(0, 220, 255, 0.25);
+    box-shadow:
+        0 0 18px rgba(0, 220, 255, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.12);
+    transform: translateX(6px);
+}
+
+.music-item.selected {
+    box-shadow:
+        0 0 18px rgba(0, 220, 255, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.12) !important;
+}
+
+
+/* ===============================
+   MUSIC LIST FOCUS
+   =============================== */
+
+.music-list-focused {
+    border-radius: 14px;
+    box-shadow:
+        0 0 40px rgba(0, 220, 255, 0.60),
+        inset 0 0 22px rgba(255, 255, 255, 0.15),
+        0 0 0 1px rgba(0, 220, 255, 0.45);
+
+    transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+
+/* ===============================
+   BIG ICON CHOOSER
+   =============================== */
+
+.big-icon-chooser {
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(12px) brightness(0.4);
+    background: rgba(0,0,0,0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+
+.big-icon-chooser.hidden {
+    display: none;
+}
+
+.bic-inner {
+    width: 80vw;
+    height: 80vh;
+    background: rgba(30,30,35,0.9);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.bic-inner h2 {
+    margin: 0 0 15px;
+    font-size: 26px;
+    text-align: center;
+    color: #fff;
+}
+
+.bic-grid {
+    flex: 1;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 120px);
+    gap: 16px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.bic-grid img {
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+}
+
+.bic-grid img:hover {
+    transform: scale(1.18);
+    background: rgba(255,255,255,0.15);
+}
+
+#bic-close {
+    margin-top: 12px;
+    padding: 8px 20px;
+    align-self: center;
+}
+
+
+/* ===============================
+   MODE DEBUGGER
+   =============================== */
+
+#modeDebugger {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-family: monospace;
+    background: rgba(0,0,0,0.55);
+    color: #00ffea;
+    border: 1px solid rgba(0,255,255,0.6);
+    border-radius: 6px;
+    z-index: 99999999999999999;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+    display: none;
+}
+
+#modeDebugger:empty {
+    display: none;
+}
+
+
+/* ===============================
+   SETTINGS PANEL (BASE)
+   =============================== */
+
+#settingsPanel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 100vh;
+
+    background: rgba(20,20,20,0.85);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+
+    z-index: 999999;
+}
+
+#settingsPanel.visible {
+    transform: translateX(0);
+}
+
+#settingsPanel input {
+    width: 100%;
+    padding: 6px;
+    margin: 10px 0 20px 0;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+}
+
+#settingsPanel button {
+    margin-right: 10px;
+}
+
+
+/* ===============================
+   TOP LEFT AREA
+   =============================== */
+
+#top-left {
+    position: fixed;
+    top: 10px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    z-index: 999999;
+}
+
+
+/* ===============================
+   SETTINGS BUTTON
+   =============================== */
+
+#settingsButton {
+    position: fixed;
+    bottom: 15px;
+    left: 20px;
+
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    padding: 5px;
+
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    transition: 0.15s ease;
+    z-index: 999999;
+    filter: grayscale(1);
+}
+
+#settingsButton:hover {
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.1);
+}
+
+#settingsButton img {
+    width: 100%;
+    height: 100%;
+}
+
+
+/* ===============================
+   DATETIME BAR
+   =============================== */
+
+#datetimebar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    color: rgba(255,255,255,0.85);
+    font-size: 18px;
+    font-weight: 600;
+    text-shadow: 0 0 10px black;
+    z-index: 99999;
+    user-select: none;
+}
+
+/* ===============================
+   SETTINGS PANEL (MODERN)
+   =============================== */
+
+#settingsPanel {
+    font-family: "Nunito", system-ui, sans-serif;
+    color: #eaeaea;
+}
+
+#settingsPanel h2 {
+    margin-top: 10px;
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #fff;
+}
+
+#settingsPanel label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+#settingsPanel input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+
+    color: #fff;
+    font-size: 15px;
+    border-radius: 8px;
+
+    transition: 0.2s ease;
+}
+
+#settingsPanel input[type="text"]:focus {
+    outline: none;
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(0,255,200,0.6);
+    box-shadow: 0 0 10px rgba(0,255,200,0.3);
+}
+
+#settingsPanel button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+
+    transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    margin-top: 10px;
+}
+
+#settingsPanel button:hover {
+    background: rgba(255,255,255,0.18);
+    transform: scale(1.05);
+}
+
+#settingsPanel button:active {
+    transform: scale(0.97);
+}
+
+#settingsSave {
+    background: rgba(0,255,180,0.15);
+    border-color: rgba(0,255,200,0.3);
+}
+
+#settingsSave:hover {
+    background: rgba(0,255,180,0.25);
+    box-shadow: 0 0 12px rgba(0,255,180,0.4);
+}
+
+#settingsClose {
+    margin-left: 10px;
+}
+
+
+/* ===============================
+   VIDEO PANEL
+   =============================== */
+
+#videoPanel {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+
+    padding: 20px;
+    border-radius: 15px;
+
+    pointer-events: auto !important;
+}
+
+#videoPanel.hidden {
+    display: none;
+}
+
+
+/* ===============================
+   VIDEO INPUT
+   =============================== */
+
+#videoInput {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+
+    border: none;
+    border-radius: 14px;
+    outline: none;
+
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    color: #e8e8e8;
+
+    box-shadow:
+        0 0 35px rgba(0, 220, 255, 0.50),
+        inset 0 0 22px rgba(255, 255, 255, 0.10),
+        0 0 0 1px rgba(255, 255, 255, 0.10);
+
+    transition:
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+#videoInput::placeholder {
+    color: rgba(255,255,255,0.35);
+}
+
+#videoInput:focus {
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 0 45px rgba(0, 220, 255, 0.60),
+        inset 0 0 28px rgba(255, 255, 255, 0.18),
+        0 0 0 1px rgba(0, 220, 255, 0.45);
+}
+
+
+/* ===============================
+   VIDEO RESULTS
+   =============================== */
+
+#videoResults {
+    margin-top: 18px;
+    border-radius: 14px;
+    padding: 8px 0;
+
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px);
+
+    box-shadow:
+        0 0 30px rgba(0, 220, 255, 0.45),
+        inset 0 0 18px rgba(255, 255, 255, 0.10),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+
+    max-height: 45vh;
+    overflow-y: auto;
+
+    transition: box-shadow 0.25s ease;
+}
+
+#videoResults:empty {
+    display: none;
+}
+
+#videoResults.video-list-focused {
+    box-shadow:
+        0 0 40px rgba(0, 220, 255, 0.65),
+        inset 0 0 22px rgba(255, 255, 255, 0.15),
+        0 0 0 1px rgba(0, 220, 255, 0.45);
+}
+
+
+/* ===============================
+   VIDEO LIST ITEMS
+   =============================== */
+
+.video-item {
+    padding: 12px 18px;
+    font-size: 20px;
+    color: #e8e8e8;
+    cursor: pointer;
+
+    border-radius: 10px;
+    margin: 4px 10px;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.video-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(4px);
+
+    box-shadow:
+        0 0 12px rgba(0, 220, 255, 0.35),
+        inset 0 0 12px rgba(255, 255, 255, 0.10) !important;
+}
+
+.video-item.sel,
+.video-item.active {
+    background: rgba(0, 220, 255, 0.25);
+    box-shadow:
+        0 0 18px rgba(0, 220, 255, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.12);
+    transform: translateX(6px);
+}
+
+
+/* ===============================
+   VIDEO LIST FOCUS
+   =============================== */
+
+.video-list-focused {
+    border-radius: 14px;
+    box-shadow:
+        0 0 40px rgba(0, 220, 255, 0.60),
+        inset 0 0 22px rgba(255, 255, 255, 0.15),
+        0 0 0 1px rgba(0, 220, 255, 0.45);
+
+    transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+
+
+/* ===============================
+   BACKGROUND VIDEO
+   =============================== */
+
+#bg-video {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    z-index: -1;
+    background: black;
+}
+
+/* ===============================
+   UI DIALOG (ALERT / CONFIRM)
+   =============================== */
+
+#ui-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 9999999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(14px);
+}
+
+#ui-dialog.hidden {
+    display: none;
+}
+
+.ui-dialog-inner {
+    width: 380px;
+    max-width: 90vw;
+
+    background: rgba(25,25,30,0.9);
+    border-radius: 18px;
+    padding: 22px;
+
+    color: white;
+    box-shadow:
+        0 0 30px rgba(0,220,255,0.45),
+        inset 0 0 18px rgba(255,255,255,0.06);
+
+    animation: dialogPop 0.18s ease-out;
+}
+
+@keyframes dialogPop {
+    from { transform: scale(0.92); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+#ui-dialog-title {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+#ui-dialog-content {
+    font-size: 15px;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+.ui-dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.ui-dialog-buttons .primary {
+    background: rgba(0,255,180,0.25);
+    border: 1px solid rgba(0,255,200,0.4);
+}
+
+.ui-dialog-buttons .primary:hover {
+    background: rgba(0,255,180,0.4);
+}

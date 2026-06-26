@@ -1,0 +1,2 @@
+Download this version from jquery, needed for trumbowyg
+https://code.jquery.com/jquery-3.7.1.min.js

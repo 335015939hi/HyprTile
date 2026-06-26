@@ -1,0 +1,24 @@
+#################
+# Required
+#################
++ Hyprland
++ Qt 6
++ SQLite3 + Qt SQLite driver
++ pulseaudio-utils OR pipewire-pulse
+
+#################
+# Optional
+#################
+# Screenshot / Screenrecording:
++ grim
++ slurp
++ wf-recorder
+
+# File Manager:
++ thunar
+
+# Music Player:
++ audacious
+
+# External URL Handler:
++ firefox (or configure a different browser)

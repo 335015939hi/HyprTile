@@ -1,0 +1,36 @@
+<RCC>
+  <qresource prefix="/">
+    <!-- CSS -->
+    <file>css/style_neu.css</file>
+    <file>js/ed/ui/trumbowyg.min.css</file>
+
+    <!-- JS Core -->
+    <file>js/main.js</file>
+    <file>js/ui-dialog.js</file>
+    <file>js/backend.js</file>
+    <file>js/apps.js</file>
+    <file>js/filter.js</file>
+    <file>js/modes.js</file>
+    <file>js/keyboard.js</file>
+    <file>js/dragdrop.js</file>
+    <file>js/volume.js</file>
+    <file>js/sysmon.js</file>
+    <file>js/capture.js</file>
+    <file>js/calendar.js</file>
+    <file>js/notes.js</file>
+    <file>js/starfield.js</file>
+    <file>js/music.js</file>
+    <file>js/video.js</file>
+    <file>js/clock.js</file>
+    <file>js/monitor-grid.js</file>
+    <file>js/settings.js</file>
+    <file>js/debug.js</file>
+
+    <!-- Editor -->
+    <file>js/ed/trumbowyg.min.js</file>
+    <file>js/ed/plugins/base64/trumbowyg.base64.js</file>
+
+    <!-- jQuery -->
+    <file>js/jquery/jquery-3.7.1.min.js</file>
+  </qresource>
+</RCC>
